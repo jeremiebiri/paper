@@ -1,0 +1,13 @@
+# Private papers and generated review artifacts
+papers/
+.claude/skills/
+
+# Local environments and Python bytecode
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Local configuration and secrets
+.env
+*.local.json

@@ -9,7 +9,7 @@ allowed-tools: Read, Grep, Glob, Bash(python *)
 
 # Verify Code Claims
 
-Check each claim tagged `evidence_type: "code"` from read-txt against the actual codebase.
+Check each claim tagged `evidence_type: "code"` from read-claim against the actual codebase.
 
 ## Workflow
 
@@ -38,6 +38,8 @@ Read {paper_dir}/metadata/code/index.json
 ```
 
 This is the tree-sitter index from prepare-paper. Use it to locate relevant files, symbols, and config entries.
+If no codebase was supplied, report each code claim as `unverifiable` and say
+which local input is missing. Do not infer code behavior from the paper alone.
 
 ## Step 3: Verify Each Code Claim
 
@@ -74,6 +76,7 @@ Statuses:
 | `pass` | Code matches the claim |
 | `warning` | Code is related but differs in detail (e.g., paper says Adam, code uses AdamW) |
 | `error` | Code contradicts the claim, or no implementation found in the repo |
+| `unverifiable` | No local codebase or insufficient code evidence |
 
 When `status` is `warning` or `error`, `reason` should explain the discrepancy and `suggest` should propose a concrete fix (e.g., "Update the paper text to match the code, or change the code to AdamW to match the paper claim").
 
@@ -116,7 +119,7 @@ Output: `{paper_dir}/reports/check_code.json`
 
 ## Coverage Rule
 
-**Every claim with `code` in evidence_type MUST appear in `results`. No claim may be silently skipped.** Valid statuses are `pass / warning / error`. If a claim cannot be verified at all from the codebase (no relevant file found, repo too incomplete), use `status: "warning"` with `quote` like `path/to/expected/file.ext:0 — file not in repo` so the reviewer can still see what was being checked.
+**Every claim with `code` in evidence_type MUST appear in `results`. No claim may be silently skipped.** If no relevant file is present, use `unverifiable` unless the supplied code explicitly contradicts the claim. Never invent a file:line location.
 
 ## Tips
 

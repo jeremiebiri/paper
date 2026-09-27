@@ -24,10 +24,12 @@ Scan the full paper text for writing issues: grammar errors, typos, unclear phra
 ## Step 1: Read Full Paper Text
 
 ```
-Read {paper_dir}/metadata/{arxiv_id}/mathpix/{arxiv_id}.md
+Read {paper_dir}/metadata/paper/full.md
 ```
 
-**Read the entire document — do not split by section.**
+Read every file in `{paper_dir}/metadata/paper/sections/` in order, one at a
+time if needed for the local model's context. At the end, compare terminology
+and conclusions across sections. Record if any section could not be read.
 
 ---
 
@@ -116,7 +118,7 @@ Output: `{paper_dir}/reports/check_txt.json`
 
 ## Ignore PDF Parsing Artifacts
 
-The input text is extracted from PDF via Mathpix/MinerU. **Do NOT flag these as writing issues:**
+The input text is extracted locally and may lose layout or equations. **Do NOT flag these as writing issues:**
 
 - **Broken hyphens**: `"ex-\nploratory"` or `"trajec-\ntory"` — these are line-break artifacts, not typos
 - **Missing hyphens from line breaks**: `"turnlevel"` instead of `"turn-level"` — if the compound word clearly needs a hyphen but the text was joined across a line break, skip it

@@ -1,96 +1,39 @@
 ---
 name: prepare-paper
-description: Organize a paper PDF and its codebase into clean reading artifacts. Use this before any other read-* skills.
+description: Prepare a paper for review using local files only, without uploading the PDF.
 author: PaperDoctor Research
 license: MIT
-argument-hint: paper.pdf
-allowed-tools: Read, Bash(python *), Bash(kill *)
+argument-hint: [paper_dir]
+allowed-tools: Read, Glob, Bash(python *)
 ---
 
-# Prepare Paper
+# Prepare Paper Offline
 
- Use this workflow to organize a paper PDF and code into clean reading artifacts.
- 
-## Overall Flow
+Work from the repository root. Never call Mathpix, MinerU's hosted API, a web
+search, or any other remote service. All input and output stays in the paper
+directory. Do not add private paper directories to Git.
 
-```text
-  +---------------------------+    +---------------------------+    +---------------------------+
-  | Step 1: Parse PDF         |    | Step 2: Render Pages     |    | Step 3: Index Codebase   |
-  | api_mathpix.py            |    | render page PNGs         |    | build code index         |
-  +---------------------------+    +---------------------------+    +---------------------------+
-               \                           |                           /
-                \                          |                          /
-                 \_________________________|_________________________/
-                                            |
-                                            v
-                           +---------------------------+
-                           | Step 4: Organize Paper   |
-                           | full.md / refs / sections|
-                           +---------------------------+
-```
+1. Find the main PDF in `{paper_dir}/`. If there is more than one, choose the
+   main paper explicitly. Extract its text and reference entries locally:
 
-Parallel rule:
-- Step 1, Step 2, and Step 3 run in **parallel**.
-- Step 4 runs only after all three parallel steps finish.
-- Treat Step 4 as the synchronization point after the parallel phase.
+   ```bash
+   python tools/organize_paper.py --paper-file {paper_dir}/paper.pdf
+   ```
 
-## Four Steps
+   Replace `paper.pdf` with the real filename. For pages that contain only
+   images, install Tesseract locally and add `--ocr`. If the author already has
+   a higher-quality local Markdown extraction, add `--markdown-file PATH`.
+   For LaTeX sources use `--latex-dir PATH --main-tex ROOT.tex`; that source directory gets its own
+   `metadata/paper/` output. The PDF is still needed for visual review.
+2. Render pages with `python tools/pdf_render.py {paper_dir}/paper.pdf`.
+3. If the author has supplied a code repository, index it with
+   `python tools/code_analyzer.py PATH --output {paper_dir}/metadata/code/index.json`.
+   Otherwise skip code indexing and record that code checks cannot run.
+4. If `{paper_dir}/sources/` contains local prior papers, run
+   `python tools/index_sources.py {paper_dir}`. An empty or missing corpus is
+   acceptable; bibliography and novelty claims then remain unverifiable.
 
-### Step 1: Parse the PDF with Mathpix
-
-**Prefer `api_mathpix.py` (Mathpix API) first** — it produces high-quality markdown with LaTeX math and downloads images locally.
-
-Primary command (try first):
-
-```bash
-python tools/api_mathpix.py papers/<paper_dir>/<paper_file>.pdf
-```
-
-This uploads the PDF, waits for processing, downloads markdown + images to `papers/<paper_dir>/metadata/<arxiv_id>/mathpix/`.
-
-Fallback (only if Mathpix API fails — account disabled, network error, etc.):
-
-```bash
-python tools/api_mineru.py -p papers/<paper_dir>/<paper_file>.pdf -o papers/<paper_dir>/metadata
-```
-
-### Step 2: Render page images
-
-Command:
-
-```bash
-python tools/pdf_render.py papers/<paper_dir>/<paper_file>.pdf
-```
-
-### Step 3: Index the codebase
-
-Command:
-
-```bash
-python tools/code_analyzer.py papers/<paper_dir>/<repo_dir> --output papers/<paper_dir>/metadata/code/index.json
-```
-
-### Step 4: Organize the paper markdown
-
-Command:
-
-```bash
-python tools/organize_paper.py --paper-file papers/<paper_dir>/<paper_file>.pdf
-```
-
-This step reads the Mathpix/MinerU output from Step 1 and writes the normalized paper text, extracted references, and per-section markdown files.
-
-## Execution Order
-
-Run the workflow like this:
-
-1. Start Step 1, Step 2, and Step 3 in parallel when needed.
-2. Wait for all of Step 1, Step 2, and Step 3 to finish.
-3. Run Step 4.
-
-## Common Issues
-
-- **Always try `python tools/api_mathpix.py` first.** Only fall back to `api_mineru.py` if the Mathpix API fails.
-- Paper text is read from `{paper_dir}/metadata/{arxiv_id}/mathpix/{arxiv_id}.md` by downstream skills.
-- Run `organize_paper.py` only after Mathpix/MinerU output exists.
-- If Step 4 fails, first check whether markdown actually exists under `metadata/<pdf_stem>/`.
+The canonical paper text is `{paper_dir}/metadata/paper/full.md` and its
+references are `{paper_dir}/metadata/paper/references.json`. Check for
+`pages_without_text` in the organizer output. Missing text means the review is
+incomplete; never treat missing extraction as evidence that a section is absent.

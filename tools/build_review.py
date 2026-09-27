@@ -2037,7 +2037,6 @@ HTML = f'''<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaperDoctor — {E(paper_title)} Review</title>
-<link rel="stylesheet" href="github-dark.min.css">
 <style>
 *,*::before,*::after {{ margin:0; padding:0; box-sizing:border-box; }}
 html, body {{ height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14px; color:#1f2937; }}
@@ -2410,8 +2409,6 @@ body.dark .card-comment-input {{ background:#0f0f12; color:#e5e7eb; border-color
 
 </div>
 
-<script src="highlight.min.js"></script>
-<script src="python.min.js"></script>
 
 <script>
 (function(){{

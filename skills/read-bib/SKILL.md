@@ -1,25 +1,33 @@
 ---
 name: read-bib
-description: Verify each cited reference exists via web search.
-allowed-tools: Read, WebSearch
+description: Check references against user-supplied local source papers only.
+allowed-tools: Read, Glob, Grep, Bash(python *)
 ---
 
-Read the input `references.json`. For each entry, WebSearch its `raw_text` and record `found` or `not_found`.
+# Offline Bibliography Check
 
-Each entry's `id`, `year`, `raw_text` fields should be copied as-is into the output — do not modify them.
+Read `{paper_dir}/metadata/paper/references.json`. If local source papers are
+present under `{paper_dir}/sources/`, run
+`python tools/index_sources.py {paper_dir}` and inspect
+`{paper_dir}/metadata/sources/index.json` and its extracted text files.
 
-When status is `warning` or `error`, set `quote` to the URL(s) found during search (e.g. the correct arXiv/venue page) followed by a blank line and the original `raw_text` of the citation, so reviewers see both the candidate fix-up source and the original entry. Also include a `suggest` field with a concrete one-sentence fix the author can apply (e.g. "Update the year to 2025" or "Replace with the correct arXiv ID").
+For **every** reference, copy `id`, `year`, and `raw_text` without changing them.
+Use `pass` only after a local source's actual text supports the cited title,
+authors, year, and identifier. Add `reference` with the local source path and
+`reason` with the matching evidence. A DOI match in an index is a candidate,
+not enough on its own to pass. Use `warning` for a confirmed mismatch in a
+source that can be identified. Use `unverifiable` if no relevant local source
+exists, text extraction failed, or the evidence is insufficient. **Do not mark
+an absent local PDF as an invalid publication.** Never fabricate identifiers.
 
-Input: `{paper_dir}/metadata/paper/references.json`
-Output: `{paper_dir}/reports/check_bib.json`
+Do not use WebSearch, WebFetch, external APIs, or network commands. Save
+`{paper_dir}/reports/check_bib.json` with a `summary` count and a `results`
+array. Each result should include `status`, `reason`, and `reference` when
+local evidence exists. Example:
 
 ```json
 {
-  "summary": { "total": 42, "pass": 38, "warning": 2, "error": 2 },
-  "results": [
-    { "id": "ref-001", "year": "2016", "raw_text": "[1] Jun Xu, Tao Mei, Ting Yao, and Yong Rui. Msr-vtt: A large video description dataset for bridging video and language. In CVPR, pages 5288–5296, 2016.", "status": "pass" },
-    { "id": "ref-005", "year": "2020", "raw_text": "[5] ...", "status": "warning", "reason": "title found but venue/year differs", "quote": "https://arxiv.org/abs/...\n\n[5] ...", "suggest": "Update the year to 2021 to match the venue listing." },
-    { "id": "ref-007", "year": "2017", "raw_text": "[7] ...", "status": "error", "reason": "not found or search returned no match", "quote": "[7] ...", "suggest": "Replace with a verified citation or remove the reference." }
-  ]
+  "summary": {"total": 1, "pass": 0, "warning": 0, "error": 0, "unverifiable": 1},
+  "results": [{"id": "ref-001", "year": "2024", "raw_text": "...", "status": "unverifiable", "reason": "No matching paper in the supplied local corpus"}]
 }
 ```
