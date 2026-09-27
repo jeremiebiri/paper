@@ -28,13 +28,15 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Step 1: Create Environment
 
-```bash
-conda create -n paperdr-{paper_stem} python=<version> -y
-conda activate paperdr-{paper_stem}
-# follow README for install
-```
+Use an environment and dependencies already installed locally. If the needed
+environment cannot be created from local caches, report the reproduction as
+`blocked` and identify the missing package. Do not run a package manager that
+may reach the internet in this offline workflow.
 
-Download data/checkpoints as needed. Fix any `warning`/`error` items from check_code.json before running.
+Use only data and checkpoints already available locally. If a required input
+is missing, mark that experiment `blocked` and record the missing file. Do not
+download data, checkpoints, packages, or remote container images while offline.
+Fix any `warning`/`error` items from check_code.json before running.
 
 ---
 
@@ -57,6 +59,7 @@ For each experiment, compare output against the paper's numbers. Update `check_e
 | `pass` | Matches paper within ~1-2% |
 | `warning` | Partial match or needed fixes |
 | `error` | Significant difference or could not run |
+| `blocked` | Required local inputs or environment are unavailable |
 
 ## Tips
 

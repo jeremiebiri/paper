@@ -25,7 +25,7 @@ Any missing report is skipped with a notice.
 ```text
 - [ ] Step 1: Collect inputs and confirm the main PDF
 - [ ] Step 2: Generate HTML via build_review.py (renders pages, runs quote search)
-- [ ] Step 3: Copy assets
+- [ ] Step 3: Copy the local logo
 ```
 
 ---
@@ -97,15 +97,12 @@ Each finding card shows:
 
 ## Step 3: Copy Assets
 
-Copy each of these from the repo's top-level `assets/` directory into the `{paper_dir}/display/` folder:
-
-- `highlight.min.js` — syntax highlighting (local, from highlight.js)
-- `python.min.js` — Python language support
-- `github-dark.min.css` — code theme
-- `logo.png` — PaperDoctor logo
+Copy `assets/logo.png` into `{paper_dir}/display/`. The report uses inline
+styles and an escaped plain-text code viewer when highlighting scripts are
+unavailable.
 
 ```bash
-cp assets/{highlight.min.js,python.min.js,github-dark.min.css,logo.png} {paper_dir}/display/
+cp assets/logo.png {paper_dir}/display/
 ```
 
 Output directory: `{paper_dir}/display/`
@@ -118,9 +115,6 @@ display/
 │   ├── page-001.png
 │   ├── page-002.png
 │   └── ...
-├── highlight.min.js     # syntax highlighting (local)
-├── python.min.js        # Python language support
-├── github-dark.min.css  # code theme
 └── logo.png             # PaperDoctor logo
 ```
 

@@ -28,7 +28,7 @@ Review experiment design for fairness and rigor, then produce a prioritized plan
 
 Each claim's `id`, `source`, `quote`, `claim`, `evidence_type` fields should be copied as-is into the output — do not modify them.
 
-- Paper text from `{paper_dir}/metadata/{arxiv_id}/mathpix/{arxiv_id}.md`
+- Paper text from `{paper_dir}/metadata/paper/full.md`
 - Repo `README.md` — for setup instructions, datasets, checkpoints, commands
 
 ---
@@ -75,8 +75,8 @@ Scan the repo for datasets and checkpoints. For each experiment claim, assign:
 Data/checkpoint availability:
 
 - **provided** — already exists locally
-- **downloadable** — public URL, < 1 GB
-- **restricted** — registration required, or > 1 GB
+- **missing locally** — not available without network access
+- **restricted** — permission or access is required
 
 ---
 
@@ -124,10 +124,10 @@ Output: `{paper_dir}/reports/check_exp.json`
 
 ## Coverage Rule
 
-**Every claim with `experiment` in evidence_type MUST appear in either `results` or `plan`. No claim may be silently skipped.** If a claim is not worth a full review, still include it in `results` with `status: "pass"` and a brief reason.
+**Every claim with `experiment` in evidence_type MUST appear in either `results` or `plan`. No claim may be silently skipped.** If there is insufficient evidence, include it with `status: "unverifiable"` and explain why.
 
 ## Tips
 
 - Missing error bars on a table that claims "average over N trials" is a `warning`
-- Comparing against a 3-year-old baseline when newer ones exist is a `warning`
+- When a supplied local source establishes a newer relevant baseline, omission may be a `warning`
 - Using different training epochs or data for your method vs baselines is an `error`

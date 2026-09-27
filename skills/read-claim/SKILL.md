@@ -25,10 +25,14 @@ Extract all claims the authors make about their own work — both explicit and i
 ## Step 1: Read Full Paper Text
 
 ```
-Read {paper_dir}/metadata/{arxiv_id}/mathpix/{arxiv_id}.md
+Read {paper_dir}/metadata/paper/full.md
 ```
 
-**Read the entire document — do not split by section.**
+Read every section from `{paper_dir}/metadata/paper/sections/` in order. On a
+long paper, process one section at a time so it fits the local model's context.
+Keep a running claim list, then revisit the abstract, results, and conclusion
+to check cross-section consistency. Do not silently omit a section that was
+too long for the context window.
 
 ## Step 2: Extract Explicit Claims
 

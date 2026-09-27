@@ -27,7 +27,10 @@ Read `{paper_dir}/reports/check_claim.json`. Filter to claims where `evidence_ty
 
 Each claim's `id`, `source`, `quote`, `claim`, `evidence_type` fields should be copied as-is into the output — do not modify them.
 
-Read the full paper text from `{paper_dir}/metadata/{arxiv_id}/mathpix/{arxiv_id}.md`.
+Read the relevant sections from `{paper_dir}/metadata/paper/sections/`; consult
+the full paper at `{paper_dir}/metadata/paper/full.md` for definitions and
+cross-references. If PDF extraction lost an equation and no LaTeX source is
+available, mark that claim `unverifiable` rather than guessing the derivation.
 
 ---
 
@@ -69,6 +72,7 @@ Statuses:
 | `pass` | Argument is correct |
 | `warning` | Correct but has implicit assumptions, ambiguity, or missing edge-case discussion |
 | `error` | Error found — wrong sign, dropped term, invalid logical step |
+| `unverifiable` | Equation or prerequisite is missing from local extracted text |
 
 When `status` is `warning` or `error`, `reason` should explain the problem precisely and `suggest` should propose a concrete fix.
 
